@@ -8,7 +8,7 @@ class Bot(discord.Client):
     async def on_message(self, message):
         if message.author == self.user: return
 
-        if message.channel.guild is None:
+        if isinstance(message.channel, discord.DMChannel):
             # I hope this means it's a DM :)
             if (username := crypto.verify_token(message.content)) is not None:
                 print(f"Registering discord id {message.author.id} for user {username}")

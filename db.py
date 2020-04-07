@@ -5,7 +5,7 @@ db = Database()
 
 class User(db.Entity):
     cryptohack_name = Required(str, unique=True)
-    discord_id = Required(int, unique=True)
+    discord_id = Required(int, size=64, unique=True)
 
 db.bind(**config.db._raw)
 db.generate_mapping(create_tables=True)
@@ -21,4 +21,4 @@ def lookup_by_cryptohack_username(username : str):
 @db_session
 def register(username : str, id : int):
     # TODO: do something when the user is already linked
-    User(username, id)
+    User(cryptohack_name=username, discord_id=id)
