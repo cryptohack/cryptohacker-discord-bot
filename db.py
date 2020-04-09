@@ -7,7 +7,7 @@ class User(db.Entity):
     cryptohack_name = Required(str, unique=True)
     discord_id = Required(int, size=64, unique=True)
 
-db.bind(**config.db._raw)
+db.bind(**config.db.data)
 db.generate_mapping(create_tables=True)
 
 @db_session

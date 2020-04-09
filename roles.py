@@ -22,3 +22,9 @@ async def update_roles(ctx, score):
         if score.global_rank <= rank:
             await add_role_by_name(name)
             break
+
+async def process_reaction(callback, message_id, guild, emoji):
+    if (actions := config.role_reactions.get(str(message_id))) is not None:
+        for act in actions:
+            if act.emoji == emoji:
+                await callback([r for r in guild.roles if r.name == act.role][0])

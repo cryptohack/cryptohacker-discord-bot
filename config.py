@@ -1,15 +1,18 @@
 import os.path, json
+import collections
 
-class ConfigItem:
+class ConfigItem(collections.UserDict):
     def __init__(self, obj):
-        self._raw = obj
+        self.data = obj
         for k, v in obj.items():
-            self.__dict__[k] = self.new(v)
+            self.__dict__[k] = self[k] = self.new(v)
 
     @classmethod
     def new(cls, x):
         if isinstance(x, dict):
             return ConfigItem(x)
+        elif isinstance(x, list):
+            return [ConfigItem.new(y) for y in x]
         return x
 
 BASE = os.path.abspath(os.path.dirname(__file__))
