@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import crypto, db, config, roles
+import crypto, db, config, roles, api
 
 bot = commands.Bot(command_prefix="!")
 
@@ -16,7 +16,7 @@ async def connect(ctx, token : str):
             db.register(username, ctx.author.id)
             await ctx.send(f"You have successfully registered as user {username}.")
             score = crypto.get_userscore(username)
-            await roles.update_roles(ctx, score)
+            await roles.update_roles(ctx.bot, ctx.author.id, score)
         except Exception as e:
             await ctx.send(f"Something went wrong: {e}")
     else:
@@ -27,7 +27,7 @@ async def connect(ctx, token : str):
 async def update(ctx):
     if (user := db.lookup_by_discord_id(ctx.author.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
-        await roles.update_roles(ctx, score)
+        await roles.update_roles(ctx.bot, ctx.author.id, score)
     else:
         await ctx.send("I don't know who you are on cryptohack. Please go to your profile settings and DM me your token. <https://cryptohack.org/user/>")
 
@@ -44,4 +44,5 @@ async def on_raw_reaction_remove(payload):
     await roles.process_reaction(user.remove_roles, payload.message_id, guild, payload.emoji.name)
 
 if __name__ == "__main__":
+    api.run_api(bot)
     bot.run(config.discord.token)

@@ -9,6 +9,7 @@ verify_ssl = true
 discord-py = "*"
 requests = "*"
 pony = "*"
+quart = "*"
 
 [requires]
 python_version = "3.8"
