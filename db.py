@@ -20,5 +20,8 @@ def lookup_by_cryptohack_username(username : str):
 
 @db_session
 def register(username : str, id : int):
-    # TODO: do something when the user is already linked
+    if (old := lookup_by_cryptohack_username(username)) is not None:
+        old.delete()
+    if (old := lookup_by_cryptohack_username(username)) is not None:
+        old.delete()
     User(cryptohack_name=username, discord_id=id)

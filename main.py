@@ -1,20 +1,35 @@
 import discord
-import crypto, db, config
+from discord.ext import commands
+import crypto, db, config, roles
 
-class Bot(discord.Client):
-    async def on_ready(self):
-        print("Ready to roll")
+bot = commands.Bot(command_prefix="!")
 
-    async def on_message(self, message):
-        if message.author == self.user: return
+@bot.event
+async def on_ready():
+    print(discord.utils.oauth_url(config.discord.client_id))
 
-        if isinstance(message.channel, discord.DMChannel):
-            # I hope this means it's a DM :)
-            if (username := crypto.verify_token(message.content)) is not None:
-                print(f"Registering discord id {message.author.id} for user {username}")
-                db.register(username, message.author.id)
-            else:
-                await message.channel.send("This seems to be an invalid token, get your token from <todo_insert_site> and send it to me.")
+@bot.command()
+async def connect(ctx, token : str):
+    if isinstance(ctx.channel, discord.DMChannel):
+        try:
+            username = crypto.verify_token(token)
+            db.register(username, ctx.author.id)
+            await ctx.send(f"You have successfully registered as user {username}.")
+            score = crypto.get_userscore(username)
+            await roles.update_roles(ctx, score)
+        except Exception as e:
+            await ctx.send(f"Something went wrong: {e}")
+    else:
+        await ctx.send("Please register with me in DM, so that people don't steal your glory.")
+        await ctx.message.delete()
+
+@bot.command()
+async def update(ctx):
+    if (username := db.lookup_by_discord_id(ctx.author.id)) is not None:
+        score = crypto.get_userscore(username)
+        await roles.update_roles(ctx. score)
+    else:
+        await ctx.send("I don't know who you are on cryptohack. Please go to your profile settings and DM me your token. <https://cryptohack.org/user/>")
 
 if __name__ == "__main__":
-    Bot().run(config.discord.token)
+    bot.run(config.discord.token)

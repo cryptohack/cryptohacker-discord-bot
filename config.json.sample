@@ -1,6 +1,8 @@
 {
     "api": {
-        "endpoint": "https://cryptohack.org/wechall/userscore/",
+        "base": "https://cryptohack.org",
+        "userscore_endpoint": "/wechall/userscore/",
+        "usertoken_endpoint": "/discord_token/",
         "authkey": "<FILL IN HERE>"
     },
     "levels": {
