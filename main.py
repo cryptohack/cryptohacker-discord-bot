@@ -25,9 +25,9 @@ async def connect(ctx, token : str):
 
 @bot.command()
 async def update(ctx):
-    if (username := db.lookup_by_discord_id(ctx.author.id)) is not None:
-        score = crypto.get_userscore(username)
-        await roles.update_roles(ctx. score)
+    if (user := db.lookup_by_discord_id(ctx.author.id)) is not None:
+        score = crypto.get_userscore(user.cryptohack_name)
+        await roles.update_roles(ctx, score)
     else:
         await ctx.send("I don't know who you are on cryptohack. Please go to your profile settings and DM me your token. <https://cryptohack.org/user/>")
 
