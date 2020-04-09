@@ -7,7 +7,18 @@
     },
     "levels": {
         "points": [0, 10, 20, 40, 80, 160, 320, 640, 1280, 1920, 2560, 3200, 3840, 4480, 5120, 5760, 6400, 7040, 7680, 8320, 8960, 9600, 10240, 10880, 11520],
-        "names": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"]
+        "names": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20", "Level 21", "Level 22", "Level 23", "Level 24", "Level 25"],
+        "ranks": [10, 50, 100],
+        "rank_names": ["Top 10", "Top 50", "Top 100"],
+        "guild_id": 692694094111309866
+    },
+    "role_reactions": {
+        "697815533764083752": [
+            {
+                "role": "Announcements",
+                "emoji": "🔔"
+           }
+        ]
     },
     "db": {
         "provider": "sqlite",
@@ -15,6 +26,7 @@
         "create_db": true
     },
     "discord": {
-        "token": "<FILL IN HERE"
+        "token": "<FILL IN HERE>",
+        "client_id": -1
     }
 }
