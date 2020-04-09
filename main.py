@@ -13,7 +13,9 @@ async def connect(ctx, token : str):
     if isinstance(ctx.channel, discord.DMChannel):
         try:
             username = crypto.verify_token(token)
-            db.register(username, ctx.author.id)
+            now_disconnected = db.register(username, ctx.author.id)
+            for id in now_disconnected:
+                await roles.clear_roles(ctx.bot, id)
             await ctx.send(f"You have successfully registered as user {username}.")
             score = crypto.get_userscore(username)
             await roles.update_roles(ctx.bot, ctx.author.id, score)
@@ -22,6 +24,12 @@ async def connect(ctx, token : str):
     else:
         await ctx.send("Please register with me in DM, so that people don't steal your glory.")
         await ctx.message.delete()
+
+@bot.command()
+async def disconnect(ctx):
+    db.disconnect_by_discord_id(ctx.author.id)
+    await roles.clear_roles(ctx.bot, ctx.author.id)
+    await ctx.message.add_reaction("👌")
 
 @bot.command()
 async def update(ctx):

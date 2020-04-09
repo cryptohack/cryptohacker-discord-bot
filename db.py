@@ -20,8 +20,18 @@ def lookup_by_cryptohack_username(username : str):
 
 @db_session
 def register(username : str, id : int):
+    """Returns removed discord ids"""
+    removed = set()
     if (old := lookup_by_cryptohack_username(username)) is not None:
+        removed.add(old.discord_id)
         old.delete()
     if (old := lookup_by_cryptohack_username(username)) is not None:
+        removed.add(old.discord_id)
         old.delete()
     User(cryptohack_name=username, discord_id=id)
+    return removed
+
+@db_session
+def disconnect_by_discord_id(id : int):
+    if (user := lookup_by_discord_id(id)) is not None:
+        user.delete()

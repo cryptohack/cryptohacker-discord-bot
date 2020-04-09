@@ -1,10 +1,7 @@
 import bisect
 import config
 
-async def update_roles(bot, user_id, score):
-    async def add_role_by_name(name):
-        await member.add_roles([r for r in guild.roles if r.name == name][0])
-
+async def clear_roles(bot, user_id):
     guild = bot.get_guild(config.levels.guild_id)
     member = guild.get_member(user_id)
 
@@ -12,6 +9,15 @@ async def update_roles(bot, user_id, score):
     for role in guild.roles:
         if role.name in config.levels.names + config.levels.rank_names and role.name in [r.name for r in member.roles]:
             await member.remove_roles(role)
+
+async def update_roles(bot, user_id, score):
+    async def add_role_by_name(name):
+        await member.add_roles([r for r in guild.roles if r.name == name][0])
+
+    guild = bot.get_guild(config.levels.guild_id)
+    member = guild.get_member(user_id)
+
+    await clear_roles(bot, user_id)
 
     # Find the correct level role
     ptidx = max(0, bisect.bisect_right(config.levels.points, score.points) - 1)
