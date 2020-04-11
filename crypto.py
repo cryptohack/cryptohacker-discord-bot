@@ -32,3 +32,6 @@ class Score:
 def get_userscore(username):
     response = requests.get(f"{config.api.base}{config.api.userscore_endpoint}", params={"authkey": config.api.authkey, "username": username}).text
     return Score.parse(response)
+
+def fetch_scoreboard(page):
+    return requests.get(f"{config.api.base}{config.api.scoreboard_endpoint}".format(page)).json()["rankings"]

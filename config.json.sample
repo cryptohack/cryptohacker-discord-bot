@@ -3,6 +3,7 @@
         "base": "https://cryptohack.org",
         "userscore_endpoint": "/wechall/userscore/",
         "usertoken_endpoint": "/discord_token/",
+        "scoreboard_endpoint": "/api/scoreboard/{}.json",
         "authkey": "<FILL IN HERE>"
     },
     "levels": {
