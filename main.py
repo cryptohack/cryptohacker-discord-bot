@@ -50,10 +50,10 @@ async def whois(ctx, target_user : discord.User):
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
         await ctx.send(embed=discord.Embed(
-            title=score.username, url=config.website.user_url.format(score.username))
-                    .add_field(name="Rank", value=f"{score.global_rank} / {score.num_users}")
-                    .add_field(name="Score", value=f"{score.points} / {score.total_points}")
-                    .add_field(name="Solves", value=f"{score.challs_solved} / {score.total_challs}"))
+            title=score.username, url=config.website.user_url.format(score.username), color=0xfeb32b)
+                    .add_field(name="Rank", value=f"{score.global_rank} / {score.num_users}", inline=False)
+                    .add_field(name="Score", value=f"{score.points} / {score.total_points}", inline=False)
+                    .add_field(name="Solves", value=f"{score.challs_solved} / {score.total_challs}", inline=False))
     else:
         await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>")
    
