@@ -29,5 +29,8 @@
     "discord": {
         "token": "<FILL IN HERE>",
         "client_id": -1
+    },
+    "website": {
+        "user_url": "https://cryptohack.org/user/{}/"
     }
 }
