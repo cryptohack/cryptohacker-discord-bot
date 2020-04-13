@@ -68,6 +68,8 @@ async def update_roles(bot, user_id, score):
         if score.global_rank <= rank:
             if name != old_top_role:
                 await refresh_top_roles(guild)
+            else:
+                await add_role_by_name(old_top_role)
             break
 
 async def process_reaction(callback, message_id, guild, emoji):
