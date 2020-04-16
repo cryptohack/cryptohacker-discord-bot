@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import crypto, db, config, roles, api
+import crypto, db, config, roles, api, fun
 
 bot = commands.Bot(command_prefix="!")
 
@@ -56,6 +56,11 @@ async def whois(ctx, target_user : discord.User):
                     .add_field(name="Solves", value=f"{score.challs_solved} / {score.total_challs}", inline=False))
     else:
         await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>")
+
+@bot.command()
+async def fact(ctx):
+    f = fun.get_bruce_fact()
+    await ctx.send(embed=discord.Embed(title="Bruce Schneier Fact", color=0xfeb32b, description=f).set_footer(text="Powered by https://www.schneierfacts.com"))
    
 
 @bot.event
