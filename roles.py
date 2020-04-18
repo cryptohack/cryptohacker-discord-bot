@@ -27,14 +27,14 @@ async def refresh_top_roles(guild):
             # Add this role to all who deserve it
             del usermapping[user]
             if (m_id := db.lookup_by_cryptohack_username(user)) is not None:
-                member = guild.fetch_member(m_id.discord_id)
+                member = await guild.fetch_member(m_id.discord_id)
                 await member.add_roles(role)
                 
 
 async def clear_roles(bot, user_id):
     """Returns the top x role name that was removed, if any"""
     guild = bot.get_guild(config.levels.guild_id)
-    member = guild.fetch_member(user_id)
+    member = await guild.fetch_member(user_id)
 
     member_roles = [r.name for r in member.roles]
 
@@ -54,7 +54,7 @@ async def update_roles(bot, user_id, score):
         await member.add_roles([r for r in guild.roles if r.name == name][0])
 
     guild = bot.get_guild(config.levels.guild_id)
-    member = guild.fetch_member(user_id)
+    member = await guild.fetch_member(user_id)
 
 
 

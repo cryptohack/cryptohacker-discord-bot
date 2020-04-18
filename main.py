@@ -66,13 +66,13 @@ async def fact(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     guild = bot.get_guild(payload.guild_id)
-    user = guild.fetch_member(payload.user_id)
+    user = await guild.fetch_member(payload.user_id)
     await roles.process_reaction(user.add_roles, payload.message_id, guild, payload.emoji.name)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
     guild = bot.get_guild(payload.guild_id)
-    user = guild.fetch_member(payload.user_id)
+    user = await guild.fetch_member(payload.user_id)
     await roles.process_reaction(user.remove_roles, payload.message_id, guild, payload.emoji.name)
 
 if __name__ == "__main__":
