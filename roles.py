@@ -27,7 +27,11 @@ async def refresh_top_roles(guild):
             # Add this role to all who deserve it
             del usermapping[user]
             if (m_id := db.lookup_by_cryptohack_username(user)) is not None:
-                member = await guild.fetch_member(m_id.discord_id)
+                try:
+                    member = await guild.fetch_member(m_id.discord_id)
+                except:
+                    print(f"Member not found for {user}")
+                    continue
                 await member.add_roles(role)
                 
 
