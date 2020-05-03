@@ -1,5 +1,6 @@
 import os.path, json
 import collections
+import logging
 
 class ConfigItem(collections.UserDict):
     def __init__(self, obj):
@@ -19,3 +20,5 @@ BASE = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(BASE, "config.json"), "r") as configfile:
     for k, v in json.load(configfile).items():
         globals()[k] = ConfigItem.new(v)
+
+logging.basicConfig(level=logging.INFO)

@@ -1,6 +1,7 @@
 import bisect
 import requests
 import config, crypto, db
+import logging
 
 async def refresh_top_roles(guild):
     collected = []
@@ -30,7 +31,7 @@ async def refresh_top_roles(guild):
                 try:
                     member = await guild.fetch_member(m_id.discord_id)
                 except:
-                    print(f"Member not found for {user}")
+                    logging.info(f"Member not found for {user}")
                     continue
                 await member.add_roles(role)
                 
@@ -55,14 +56,16 @@ async def clear_roles(bot, user_id):
 
 async def update_roles(bot, user_id, score):
     async def add_role_by_name(name):
+        logging.info(f"add role by name: {name}")
         await member.add_roles([r for r in guild.roles if r.name == name][0])
 
     guild = bot.get_guild(config.levels.guild_id)
     member = await guild.fetch_member(user_id)
-
+    logging.info(f"update roles for member {member.name}")
 
 
     old_top_role = await clear_roles(bot, user_id)
+    logging.info(f"Old_top_role: {old_top_role}")
 
     # Find the correct level role
     ptidx = max(0, bisect.bisect_right(config.levels.points, score.points) - 1)
@@ -72,11 +75,16 @@ async def update_roles(bot, user_id, score):
     # Find potentially a rank role
     for rank, name in zip(config.levels.ranks, config.levels.rank_names):
         if score.global_rank <= rank:
+            logging.info(f"Found a rank role: {name}")
             if name != old_top_role:
+                logging.info(f"It's different, updating everything")
                 await refresh_top_roles(guild)
             else:
+                logging.info(f"It's the old one, just add it back")
                 await add_role_by_name(old_top_role)
             break
+    else:
+        logging.info(f"No rank role found")
 
 async def process_reaction(callback, message_id, guild, emoji):
     if (actions := config.role_reactions.get(str(message_id))) is not None:
