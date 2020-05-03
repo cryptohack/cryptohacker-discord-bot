@@ -35,7 +35,7 @@ async def disconnect(ctx):
 async def update(ctx, target_user : discord.User):
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
-        await roles.update_roles(ctx.bot, ctx.author.id, score)
+        await roles.update_roles(ctx.bot, user.discord_id, score)
         await ctx.message.add_reaction("👌")
     else:
         await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>")
