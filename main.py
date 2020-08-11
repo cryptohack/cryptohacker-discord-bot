@@ -75,6 +75,19 @@ async def on_raw_reaction_remove(payload):
     user = await guild.fetch_member(payload.user_id)
     await roles.process_reaction(user.remove_roles, payload.message_id, guild, payload.emoji.name)
 
+@bot.command()
+async def solved(ctx):
+    if getattr(ctx.channel, "category_id", 0) == config.ctf.category:
+        if ctx.channel.name in config.ctf.ignore or (config.ctf.prefix and ctx.channel.name.startswith(config.ctf.prefix)) or (config.ctf.suffix and ctx.channel.name.endswith(config.ctf.suffix)):
+            # Explicitely ignored or already done
+            print("Ignored")
+            return
+        else:
+            name = ctx.channel.name
+            await ctx.channel.edit(reason="!solved", name=config.ctf.prefix + name + config.ctf.suffix)
+            await ctx.bot.get_channel(config.ctf.notify_channel).send(f"<@{ctx.author.id}> just solved {name}, nice job! <@&{config.ctf.team}>")
+            await ctx.message.add_reaction("👍")
+
 if __name__ == "__main__":
     api.run_api(bot)
     bot.run(config.discord.token)

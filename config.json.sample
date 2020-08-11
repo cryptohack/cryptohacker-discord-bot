@@ -32,5 +32,13 @@
     },
     "website": {
         "user_url": "https://cryptohack.org/user/{}/"
+    },
+    "ctf": {
+        "category": -1,
+        "team": -1,
+        "suffix": "-solved",
+        "prefix": "",
+        "ignore": ["summary", "crypto-ctf-2020", "crypto-ctf-2019"],
+        "notify_channel": -1
     }
 }
