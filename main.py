@@ -84,7 +84,8 @@ async def solved(ctx):
             return
         else:
             name = ctx.channel.name
-            await ctx.channel.edit(reason="!solved", name=config.ctf.prefix + name + config.ctf.suffix, position=len(ctx.channel.category.text_channels) - 1)
+            await ctx.channel.edit(reason="!solved", name=config.ctf.prefix + name + config.ctf.suffix)
+            await ctx.channel.edit(reason="!solved", position=max(c.position for c in ctx.channel.category.channels) + 1)
             await ctx.bot.get_channel(config.ctf.notify_channel).send(f"<@{ctx.author.id}> just solved {name}, nice job! <@&{config.ctf.team}>")
             await ctx.message.add_reaction("👍")
 
