@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import crypto, db, config, roles, api, fun
 
-bot = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="!", intents=discord.Intents(members=True))
 
 @bot.event
 async def on_ready():
@@ -88,6 +88,14 @@ async def solved(ctx):
             await ctx.channel.edit(reason="!solved", position=max(c.position for c in ctx.channel.category.channels) + 1)
             await ctx.bot.get_channel(config.ctf.notify_channel).send(f"<@{ctx.author.id}> just solved {name}, nice job! <@&{config.ctf.team}>")
             await ctx.message.add_reaction("👍")
+
+@bot.event
+async def on_member_join(member):
+    pass
+
+@bot.command()
+async def verify(ctx):
+    pass
 
 if __name__ == "__main__":
     api.run_api(bot)

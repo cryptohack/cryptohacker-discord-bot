@@ -91,3 +91,6 @@ async def process_reaction(callback, message_id, guild, emoji):
         for act in actions:
             if act.emoji == emoji:
                 await callback([r for r in guild.roles if r.name == act.role][0])
+
+async def add_verified_role(bot, user_id):
+    pass

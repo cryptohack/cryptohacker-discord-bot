@@ -21,6 +21,10 @@
            }
         ]
     },
+    "user_verification": {
+        "role": "verified",
+        "guild_id": 692694094111309866
+    },
     "db": {
         "provider": "sqlite",
         "filename": ":memory:",
