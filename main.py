@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 import crypto, db, config, roles, api, fun, captcha
 
-bot = commands.Bot(command_prefix="!", intents=discord.Intents(members=True))
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
