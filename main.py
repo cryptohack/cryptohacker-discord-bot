@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import crypto, db, config, roles, api, fun
+import crypto, db, config, roles, api, fun, captcha
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents(members=True))
 
@@ -90,12 +90,16 @@ async def solved(ctx):
             await ctx.message.add_reaction("👍")
 
 @bot.event
-async def on_member_join(member):
-    pass
+async def on_member_join(member):    
+    await member.send("Welcome to the Cryptohack discord.\n" + captcha.get_instructions(member.id))
 
 @bot.command()
-async def verify(ctx):
-    pass
+async def verify(ctx, checksum : str):
+    if captcha.validate_answer(ctx.author.id, checksum):
+        await ctx.send("That looks correct.\nCome on in!")
+        await roles.add_verified_role(ctx.bot, ctx.author.id)
+    else:
+        await ctx.send("That doesn't look correct.\n" + captcha.get_instructions(ctx.author.id))
 
 if __name__ == "__main__":
     api.run_api(bot)
