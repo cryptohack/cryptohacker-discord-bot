@@ -95,4 +95,4 @@ async def process_reaction(callback, message_id, guild, emoji):
 async def add_verified_role(bot, user_id):
     guild = bot.get_guild(config.user_verification.guild_id)
     member = await(guild.fetch_member(user_id))
-    await member.add_roles([r for r in guild.roles if r.name == config.user_verification.role])
+    await member.add_roles([r for r in guild.roles if r.name == config.user_verification.role][0])
