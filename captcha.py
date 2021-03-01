@@ -16,7 +16,7 @@ def get_index(user_id):
 def get_instructions(user_id):
     idx = get_index(user_id)
     return f"""Your verification question is: *{questions[idx]['q']}*
-Input your answer into https://gchq.github.io/CyberChef/#recipe=To_Lower_case()Find_/_Replace(%7B'option':'Regex','string':'%5B%5Ea-z0-9%5D'%7D,'',true,false,true,true)XOR(%7B'option':'Hex','string':'{get_mixin(user_id)}'%7D,'Standard',false)SHA2('256',64,160) and verify by sending me `!verify <output>` (without the `<>`)"""
+Verify your answer by sending me `!verify <answer>` (without the `<>`)"""
 
 def xor(a, b):
     if isinstance(a, str):
@@ -33,4 +33,7 @@ def transform(user_id, value):
 def validate_answer(user_id, checksum):
     checksum = checksum.strip().strip("<>\"'").lower()
     index = get_index(user_id)
-    return checksum in [transform(user_id, answer) for answer in questions[index]["a"]]
+    reference = questions[index]["a"]
+    if isinstance(reference, str):
+        return checksum == transform(user_id, reference)
+    return checksum in [transform(user_id, answer) for answer in reference]
