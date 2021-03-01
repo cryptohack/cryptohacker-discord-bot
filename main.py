@@ -61,7 +61,6 @@ async def whois(ctx, target_user : discord.User):
 async def fact(ctx):
     f = fun.get_bruce_fact()
     await ctx.send(embed=discord.Embed(title="Bruce Schneier Fact", color=0xfeb32b, description=f).set_footer(text="Powered by https://www.schneierfacts.com"))
-   
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -90,8 +89,8 @@ async def solved(ctx):
             await ctx.message.add_reaction("👍")
 
 @bot.event
-async def on_member_join(member):    
-    await member.send("Welcome to the Cryptohack discord.\n" + captcha.get_instructions(member.id))
+async def on_member_join(member):
+    await member.send("Welcome to the Cryptohack discord.\nTo prevent spam we have implemented a simple fun verification question.\n" + captcha.get_instructions(member.id))
 
 @bot.command()
 async def verify(ctx, checksum : str):
