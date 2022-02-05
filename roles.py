@@ -34,7 +34,7 @@ async def refresh_top_roles(guild):
                     logging.info(f"Member not found for {user}")
                     continue
                 await member.add_roles(role)
-                
+
 
 async def clear_roles(bot, user_id):
     """Returns the top x role name that was removed, if any"""
@@ -85,6 +85,11 @@ async def update_roles(bot, user_id, score):
             break
     else:
         logging.info(f"No rank role found")
+
+    # User has solved all challenges
+    if score.points == score.total_points:
+        logging.info(f"User has solved all challenges, giving 100% Cleared role")
+        await add_role_by_name("100% Cleared")
 
 async def process_reaction(callback, message_id, guild, emoji):
     if (actions := config.role_reactions.get(str(message_id))) is not None:
