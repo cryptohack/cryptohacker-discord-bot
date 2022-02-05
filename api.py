@@ -11,4 +11,4 @@ def run_api(bot):
             return username + " updated"
         return "Not found"
 
-    bot.loop.create_task(app.run_task())
+    bot.loop.create_task(app.run_task(host='0.0.0.0', port=50001))
