@@ -47,7 +47,7 @@ async def clear_roles(bot, user_id):
 
     # Clean roles:
     for role in guild.roles:
-        if role.name in config.levels.names + config.levels.rank_names and role.name in member_roles:
+        if role.name in config.levels.names + config.levels.rank_names + config.levels.special_roles and role.name in member_roles:
             await member.remove_roles(role)
             if role.name in config.levels.rank_names:
                 top_role = role.name
