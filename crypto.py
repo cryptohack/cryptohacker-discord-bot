@@ -28,8 +28,9 @@ class Score:
         assert len(spl) == 7
         if spl[1] is 'None':
             spl[1] = spl[-1]
+            spl[2], spl[4] = '0', '0'
         username = spl.pop(0)
-        return cls(*([username] + list(map(int, [value if value.isdigit() else '0' for value in spl]))))
+        return cls(*([username] + list(map(int, spl))))
 
 def get_userscore(username):
     response = requests.get(f"{config.api.base}{config.api.userscore_endpoint}", params={"authkey": config.api.authkey, "username": username}).text
