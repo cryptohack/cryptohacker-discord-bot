@@ -26,8 +26,10 @@ class Score:
         #username:global_rank:points:total_points:challs_solved:total_challs:num_users
         spl = raw.split(":")
         assert len(spl) == 7
+        if spl[1] is 'None':
+            spl[1] = spl[-1]
         username = spl.pop(0)
-        return cls(*([username] + list(map(int, spl))))
+        return cls(*([username] + list(map(int, [value if value.isdigit() else '0' for value in spl]))))
 
 def get_userscore(username):
     response = requests.get(f"{config.api.base}{config.api.userscore_endpoint}", params={"authkey": config.api.authkey, "username": username}).text
