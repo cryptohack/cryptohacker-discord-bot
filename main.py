@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import crypto, db, config, roles, api, fun, captcha
 
+import typing
+
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -95,8 +97,10 @@ async def on_member_join(member):
     await member.send("Welcome to the Cryptohack discord.\nTo prevent spam we have implemented a simple fun verification question.\n" + captcha.get_instructions(member.id))
 
 @bot.command()
-async def verify(ctx, checksum : str):
-    if captcha.validate_answer(ctx.author.id, checksum):
+async def verify(ctx, checksum : typing.Optional[str] = None):
+    if checksum is None:
+        await ctx.send(captcha.get_instructions(ctx.author.id))
+    elif captcha.validate_answer(ctx.author.id, checksum):
         await ctx.send("That looks correct.\nCome on in!")
         await roles.add_verified_role(ctx.bot, ctx.author.id)
     else:
