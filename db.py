@@ -25,7 +25,7 @@ def register(username : str, id : int):
     if (old := lookup_by_cryptohack_username(username)) is not None:
         removed.add(old.discord_id)
         old.delete()
-    if (old := lookup_by_cryptohack_username(username)) is not None:
+    if (old := lookup_by_discord_id(id)) is not None:
         removed.add(old.discord_id)
         old.delete()
     User(cryptohack_name=username, discord_id=id)
