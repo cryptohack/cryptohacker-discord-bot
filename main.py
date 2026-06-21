@@ -12,7 +12,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(discord.utils.oauth_url(config.discord.client_id, permissions=discord.Permissions(manage_roles=True, manage_messages=True)))
-    print(await bot.tree.sync())
 
 
 def is_app_command(ctx: commands.Context) -> bool:
@@ -126,7 +125,12 @@ async def verify(ctx, answer: typing.Optional[str] = None):
     else:
         await ctx.send("That doesn't look correct.\n" + captcha.get_instructions(ctx.author.id))
 
+
+async def setup_hook():
+    api.run_api(bot)
+    print(await bot.tree.sync())
+bot.setup_hook = setup_hook
+
+
 if __name__ == "__main__":
-    # TODO: update
-    # api.run_api(bot)
     bot.run(config.discord.token)
