@@ -28,7 +28,9 @@ async def react(ctx: commands.Context, emoji: str):
 @app_commands.default_permissions(use_application_commands=True)
 async def connect(ctx, token: str):
     # TODO: documentation everywhere
+    # TODO: also, maybe consider more refined permissions
     if is_app_command(ctx) or isinstance(ctx.channel, discord.DMChannel):
+        await ctx.defer(ephemeral=True)
         try:
             username = crypto.verify_token(token)
             now_disconnected = db.register(username, ctx.author.id)
@@ -36,7 +38,6 @@ async def connect(ctx, token: str):
                 await roles.clear_roles(ctx.bot, id)
             await ctx.send(f"You have successfully registered as user {username}.", ephemeral=True)
             score = crypto.get_userscore(username)
-            # TODO? Slow?
             await roles.update_roles(ctx.bot, ctx.author.id, score)
         except Exception as e:
             await ctx.send(f"Something went wrong: {e}", ephemeral=True)
@@ -47,6 +48,7 @@ async def connect(ctx, token: str):
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def disconnect(ctx):
+    await ctx.defer(ephemeral=True)
     db.disconnect_by_discord_id(ctx.author.id)
     await roles.clear_roles(ctx.bot, ctx.author.id)
     await react(ctx, "👌")
@@ -54,8 +56,8 @@ async def disconnect(ctx):
 @bot.hybrid_command()
 async def update(ctx, target_user: discord.User):
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
+        await ctx.defer(ephemeral=True)
         score = crypto.get_userscore(user.cryptohack_name)
-        # TODO? Make the context delayed or spawn as separate task
         await roles.update_roles(ctx.bot, user.discord_id, score)
         await react(ctx, "👌")
     else:
