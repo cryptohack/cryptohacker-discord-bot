@@ -14,12 +14,22 @@ async def on_ready():
     print(discord.utils.oauth_url(config.discord.client_id, permissions=discord.Permissions(manage_roles=True, manage_messages=True)))
     print(await bot.tree.sync())
 
+
+def is_app_command(ctx: commands.Context) -> bool:
+    return ctx.message.type == discord.MessageType.chat_input_command
+
+async def react(ctx: commands.Context, emoji: str):
+    if is_app_command(ctx):
+        await ctx.send(emoji, ephemeral=True)
+    else:
+        await ctx.message.add_reaction(emoji)
+
+
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def connect(ctx, token: str):
     # TODO: documentation everywhere
-    # TODO: update this check for app commands
-    if isinstance(ctx.channel, discord.DMChannel):
+    if is_app_command(ctx) or isinstance(ctx.channel, discord.DMChannel):
         try:
             username = crypto.verify_token(token)
             now_disconnected = db.register(username, ctx.author.id)
@@ -27,12 +37,12 @@ async def connect(ctx, token: str):
                 await roles.clear_roles(ctx.bot, id)
             await ctx.send(f"You have successfully registered as user {username}.", ephemeral=True)
             score = crypto.get_userscore(username)
+            # TODO? Slow?
             await roles.update_roles(ctx.bot, ctx.author.id, score)
         except Exception as e:
-            await ctx.send(f"Something went wrong: {e}")
+            await ctx.send(f"Something went wrong: {e}", ephemeral=True)
     else:
         await ctx.send("Please register with me in DM, so that people don't steal your glory.")
-        # TODO: can't do this if it's not a message (slash command)
         await ctx.message.delete()
 
 @bot.hybrid_command()
@@ -40,8 +50,7 @@ async def connect(ctx, token: str):
 async def disconnect(ctx):
     db.disconnect_by_discord_id(ctx.author.id)
     await roles.clear_roles(ctx.bot, ctx.author.id)
-    # TODO: can't do this if it's not a message (slash command)
-    await ctx.message.add_reaction("👌")
+    await react(ctx, "👌")
 
 @bot.hybrid_command()
 async def update(ctx, target_user: discord.User):
@@ -49,16 +58,14 @@ async def update(ctx, target_user: discord.User):
         score = crypto.get_userscore(user.cryptohack_name)
         # TODO? Make the context delayed or spawn as separate task
         await roles.update_roles(ctx.bot, user.discord_id, score)
-        # TODO: can't do this if it's not a message (slash command)
-        await ctx.message.add_reaction("👌")
+        await react(ctx, "👌")
     else:
         await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>", ephemeral=True)
 
 @bot.hybrid_command()
 async def clear(ctx, target_user: discord.User):
     await roles.clear_roles(ctx.bot, target_user.id)
-    # TODO: can't do this if it's not a message (slash command)
-    await ctx.message.add_reaction("👌")
+    await react(ctx, "👌")
 
 @bot.hybrid_command()
 async def whois(ctx, target_user: discord.User):
@@ -103,8 +110,7 @@ async def solved(ctx):
             await ctx.channel.edit(reason="!solved", name=config.ctf.prefix + name + config.ctf.suffix)
             await ctx.channel.edit(reason="!solved", position=max(c.position for c in ctx.channel.category.channels) + 1)
             await ctx.bot.get_channel(config.ctf.notify_channel).send(f"<@{ctx.author.id}> just solved {name}, nice job! <@&{config.ctf.team}>")
-            # TODO: can't do this if it's not a message (slash command)
-            await ctx.message.add_reaction("👍")
+            await react(ctx, "👍")
 
 @bot.event
 async def on_member_join(member):
