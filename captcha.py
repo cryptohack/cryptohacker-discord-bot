@@ -13,7 +13,7 @@ def get_index(user_id):
 def get_instructions(user_id):
     idx = get_index(user_id)
     return f"""Your verification question is: *{questions[idx]['q']}*
-Verify your answer by sending me `!verify <answer>` (without the `<>`)"""
+Verify your answer by sending me `/verify <answer>` (without the `<>`)"""
 
 def clean(value):
     return "".join(x for x in value.lower() if x in string.ascii_letters or x in string.digits)

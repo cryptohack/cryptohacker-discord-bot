@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import crypto, db, config, roles, api, fun, captcha
 
@@ -10,47 +11,57 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(discord.utils.oauth_url(config.discord.client_id))
+    print(discord.utils.oauth_url(config.discord.client_id, permissions=discord.Permissions(manage_roles=True, manage_messages=True)))
+    print(await bot.tree.sync())
 
-@bot.command()
-async def connect(ctx, token : str):
+@bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
+async def connect(ctx, token: str):
+    # TODO: documentation everywhere
+    # TODO: update this check for app commands
     if isinstance(ctx.channel, discord.DMChannel):
         try:
             username = crypto.verify_token(token)
             now_disconnected = db.register(username, ctx.author.id)
             for id in now_disconnected:
                 await roles.clear_roles(ctx.bot, id)
-            await ctx.send(f"You have successfully registered as user {username}.")
+            await ctx.send(f"You have successfully registered as user {username}.", ephemeral=True)
             score = crypto.get_userscore(username)
             await roles.update_roles(ctx.bot, ctx.author.id, score)
         except Exception as e:
             await ctx.send(f"Something went wrong: {e}")
     else:
         await ctx.send("Please register with me in DM, so that people don't steal your glory.")
+        # TODO: can't do this if it's not a message (slash command)
         await ctx.message.delete()
 
-@bot.command()
+@bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
 async def disconnect(ctx):
     db.disconnect_by_discord_id(ctx.author.id)
     await roles.clear_roles(ctx.bot, ctx.author.id)
+    # TODO: can't do this if it's not a message (slash command)
     await ctx.message.add_reaction("👌")
 
-@bot.command()
-async def update(ctx, target_user : discord.User):
+@bot.hybrid_command()
+async def update(ctx, target_user: discord.User):
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
+        # TODO? Make the context delayed or spawn as separate task
         await roles.update_roles(ctx.bot, user.discord_id, score)
+        # TODO: can't do this if it's not a message (slash command)
         await ctx.message.add_reaction("👌")
     else:
-        await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>")
+        await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>", ephemeral=True)
 
-@bot.command()
-async def clear(ctx, target_user : discord.User):
+@bot.hybrid_command()
+async def clear(ctx, target_user: discord.User):
     await roles.clear_roles(ctx.bot, target_user.id)
+    # TODO: can't do this if it's not a message (slash command)
     await ctx.message.add_reaction("👌")
 
-@bot.command()
-async def whois(ctx, target_user : discord.User):
+@bot.hybrid_command()
+async def whois(ctx, target_user: discord.User):
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
         await ctx.send(embed=discord.Embed(
@@ -59,9 +70,10 @@ async def whois(ctx, target_user : discord.User):
                     .add_field(name="Score", value=f"{score.points} / {score.total_points}", inline=False)
                     .add_field(name="Solves", value=f"{score.challs_solved} / {score.total_challs}", inline=False))
     else:
-        await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>")
+        await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>", ephemeral=True)
 
-@bot.command()
+@bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
 async def fact(ctx):
     f = fun.get_bruce_fact()
     await ctx.send(embed=discord.Embed(title="Bruce Schneier Fact", color=0xfeb32b, description=f).set_footer(text="Powered by https://www.schneierfacts.com"))
@@ -78,7 +90,8 @@ async def on_raw_reaction_remove(payload):
     user = await guild.fetch_member(payload.user_id)
     await roles.process_reaction(user.remove_roles, payload.message_id, guild, payload.emoji.name)
 
-@bot.command()
+@bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
 async def solved(ctx):
     if getattr(ctx.channel, "category_id", 0) == config.ctf.category:
         if ctx.channel.name in config.ctf.ignore or (config.ctf.prefix and ctx.channel.name.startswith(config.ctf.prefix)) or (config.ctf.suffix and ctx.channel.name.endswith(config.ctf.suffix)):
@@ -90,22 +103,24 @@ async def solved(ctx):
             await ctx.channel.edit(reason="!solved", name=config.ctf.prefix + name + config.ctf.suffix)
             await ctx.channel.edit(reason="!solved", position=max(c.position for c in ctx.channel.category.channels) + 1)
             await ctx.bot.get_channel(config.ctf.notify_channel).send(f"<@{ctx.author.id}> just solved {name}, nice job! <@&{config.ctf.team}>")
+            # TODO: can't do this if it's not a message (slash command)
             await ctx.message.add_reaction("👍")
 
 @bot.event
 async def on_member_join(member):
     await member.send("Welcome to the Cryptohack discord.\nTo prevent spam we have implemented a simple fun verification question.\n" + captcha.get_instructions(member.id))
 
-@bot.command()
-async def verify(ctx, checksum : typing.Optional[str] = None):
-    if checksum is None:
+@bot.hybrid_command()
+async def verify(ctx, answer: typing.Optional[str] = None):
+    if answer is None:
         await ctx.send(captcha.get_instructions(ctx.author.id))
-    elif captcha.validate_answer(ctx.author.id, checksum):
+    elif captcha.validate_answer(ctx.author.id, answer):
         await ctx.send("That looks correct.\nCome on in!")
         await roles.add_verified_role(ctx.bot, ctx.author.id)
     else:
         await ctx.send("That doesn't look correct.\n" + captcha.get_instructions(ctx.author.id))
 
 if __name__ == "__main__":
-    api.run_api(bot)
+    # TODO: update
+    # api.run_api(bot)
     bot.run(config.discord.token)

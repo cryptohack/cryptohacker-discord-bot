@@ -4,9 +4,11 @@ import config, crypto, db
 import logging
 
 async def refresh_top_roles(guild):
+    # TODO: is there a faster/better way for this
     collected = []
     i = 1
     while len(collected) < max(config.levels.ranks):
+        print(f"Collecting {i}")
         collected += crypto.fetch_scoreboard(i)
         i += 1
 
@@ -16,6 +18,7 @@ async def refresh_top_roles(guild):
         for m in role.members:
             # Remove all old role members that no longer belong
             m_username = db.lookup_by_discord_id(m.id)
+            # TODO: Remove role instead of keeping it intact for an unknown user?
             if m_username is None: continue
             m_username = m_username.cryptohack_name
 
