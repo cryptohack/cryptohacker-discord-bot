@@ -7,6 +7,7 @@ import typing
 
 intents = discord.Intents.default()
 intents.members = True
+# TODO? Have bot mentions stripped from command prefix
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
@@ -27,8 +28,11 @@ async def react(ctx: commands.Context, emoji: str):
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def connect(ctx, token: str):
-    # TODO: documentation everywhere
-    # TODO: also, maybe consider more refined permissions
+    """
+        Connect your discord and CryptoHack accounts for progress roles and information finding.
+
+        :param token: The connection token, see <https://cryptohack.org/user/>
+    """
     if is_app_command(ctx) or isinstance(ctx.channel, discord.DMChannel):
         await ctx.defer(ephemeral=True)
         try:
@@ -48,13 +52,16 @@ async def connect(ctx, token: str):
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def disconnect(ctx):
+    """Unlink your discord and CryptoHack accounts."""
     await ctx.defer(ephemeral=True)
     db.disconnect_by_discord_id(ctx.author.id)
     await roles.clear_roles(ctx.bot, ctx.author.id)
     await react(ctx, "👌")
 
 @bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
 async def update(ctx, target_user: discord.User):
+    """Update the progress roles for a discord user"""
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         await ctx.defer(ephemeral=True)
         score = crypto.get_userscore(user.cryptohack_name)
@@ -64,12 +71,16 @@ async def update(ctx, target_user: discord.User):
         await ctx.send("I don't know who that is on cryptohack. Registration happens by going to your profile settings and DMing me your token. <https://cryptohack.org/user/>", ephemeral=True)
 
 @bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True, manage_roles=True)
 async def clear(ctx, target_user: discord.User):
+    """Clear the progress roles for a user. Diagnostic tool."""
     await roles.clear_roles(ctx.bot, target_user.id)
     await react(ctx, "👌")
 
 @bot.hybrid_command()
+@app_commands.default_permissions(use_application_commands=True)
 async def whois(ctx, target_user: discord.User):
+    """Find out how well a discord user is doing on CryptoHack."""
     if (user := db.lookup_by_discord_id(target_user.id)) is not None:
         score = crypto.get_userscore(user.cryptohack_name)
         await ctx.send(embed=discord.Embed(
@@ -83,6 +94,7 @@ async def whois(ctx, target_user: discord.User):
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def fact(ctx):
+    """Fun facts about Bruce."""
     f = fun.get_bruce_fact()
     await ctx.send(embed=discord.Embed(title="Bruce Schneier Fact", color=0xfeb32b, description=f).set_footer(text="Powered by https://www.schneierfacts.com"))
 
@@ -101,6 +113,7 @@ async def on_raw_reaction_remove(payload):
 @bot.hybrid_command()
 @app_commands.default_permissions(use_application_commands=True)
 async def solved(ctx):
+    """Mark the channel for a CTF challenge as solved."""
     if getattr(ctx.channel, "category_id", 0) == config.ctf.category:
         if ctx.channel.name in config.ctf.ignore or (config.ctf.prefix and ctx.channel.name.startswith(config.ctf.prefix)) or (config.ctf.suffix and ctx.channel.name.endswith(config.ctf.suffix)):
             # Explicitely ignored or already done
@@ -119,6 +132,11 @@ async def on_member_join(member):
 
 @bot.hybrid_command()
 async def verify(ctx, answer: typing.Optional[str] = None):
+    """
+        Obtain your verification question or answer it.
+
+        :param answer: The answer to your verification question. Leave this blank to get the question itself.
+    """
     if answer is None:
         await ctx.send(captcha.get_instructions(ctx.author.id))
     elif captcha.validate_answer(ctx.author.id, answer):
