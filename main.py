@@ -7,8 +7,7 @@ import typing
 
 intents = discord.Intents.default()
 intents.members = True
-# TODO? Have bot mentions stripped from command prefix
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('!'), intents=intents)
 
 @bot.event
 async def on_ready():
