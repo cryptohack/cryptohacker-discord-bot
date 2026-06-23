@@ -4,7 +4,6 @@ import config, crypto, db
 import logging
 
 async def refresh_top_roles(guild):
-    # TODO: is there a faster/better way for this
     collected = []
     i = 1
     while len(collected) < max(config.levels.ranks):
