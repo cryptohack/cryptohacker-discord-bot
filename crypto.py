@@ -34,4 +34,4 @@ def get_userscore(username):
     return Score.parse(response)
 
 def fetch_scoreboard(page):
-    return requests.get(f"{config.api.base}{config.api.scoreboard_endpoint}".format(page)).json()["rankings"]
+    return requests.get(f"{config.api.base}{config.api.scoreboard_endpoint}?count=100".format(page)).json()["rankings"]
