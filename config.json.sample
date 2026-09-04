@@ -7,10 +7,10 @@
         "authkey": "<FILL IN HERE>"
     },
     "levels": {
-        "points": [0, 10, 20, 40, 80, 160, 320, 640, 1280, 1920, 2560, 3200, 3840, 4480, 5120, 5760, 6400, 7040, 7680, 8320, 8960, 9600, 10240, 10880, 11520],
-        "names": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20", "Level 21", "Level 22", "Level 23", "Level 24", "Level 25"],
+        "points": [0, 10, 20, 40, 80, 160, 320, 640, 1280, 1920, 2560, 3200, 3840, 4480, 5120, 5760, 6400, 7040, 7680, 8320, 8960, 9600, 10240, 10880, 11520, 12160, 12800, 13440, 14080, 14720, 15360, 16000, 16640, 17280, 17920, 18560, 19200, 19840, 20480, 21120, 21760, 22400, 23040, 23680, 24320, 24960, 25600, 26240, 26880, 27520],
+        "names": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20", "Level 21", "Level 22", "Level 23", "Level 24", "Level 25", "Level 26", "Level 27", "Level 28", "Level 29", "Level 30", "Level 31", "Level 32", "Level 33", "Level 34", "Level 35", "Level 36", "Level 37", "Level 38", "Level 39", "Level 40", "Level 41", "Level 42", "Level 43", "Level 44", "Level 45", "Level 46", "Level 47", "Level 48", "Level 49", "Level 50"],
         "ranks": [10, 50, 100],
-        "rank_names": ["Top 10", "Top 50", "Top 100"],
+        "rank_names": ["Hall of Fame 10", "Hall of Fame 50", "Hall of Fame 100"],
         "special_roles": ["100% Cleared"],
         "guild_id": 692694094111309866
     },
@@ -46,5 +46,6 @@
         "prefix": "",
         "ignore": ["summary", "crypto-ctf-2020", "crypto-ctf-2019"],
         "notify_channel": -1
-    }
+    },
+    "hall_of_fame": ["List", "of", "usernames"]
 }
