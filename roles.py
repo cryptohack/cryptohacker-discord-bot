@@ -3,15 +3,13 @@ import requests
 import config, crypto, db
 import logging
 
-async def refresh_top_roles(guild):
-    collected = []
-    i = 1
-    while len(collected) < max(config.levels.ranks):
-        print(f"Collecting {i}")
-        collected += crypto.fetch_scoreboard(i)
-        i += 1
+def top_rankings():
+    # Gets hardcoded hall of fame used to hand out the Top 10 / Top 50 / Top 100 roles,
+    # in ranking order, instead of querying the API.
+    return {username: rank for rank, username in enumerate(config.hall_of_fame, 1)}
 
-    usermapping = {e["username"]: e["rank"] for e in collected}
+async def refresh_top_roles(guild):
+    usermapping = top_rankings()
     for limit, role_name in zip(config.levels.ranks, config.levels.rank_names):
         role = [r for r in guild.roles if r.name == role_name][0]
         for m in role.members:
@@ -75,8 +73,9 @@ async def update_roles(bot, user_id, score):
         await add_role_by_name(config.levels.names[ptidx])
 
     # Find potentially a rank role
+    user_rank = top_rankings().get(score.username)
     for rank, name in zip(config.levels.ranks, config.levels.rank_names):
-        if score.global_rank <= rank:
+        if user_rank is not None and user_rank <= rank:
             logging.info(f"Found a rank role: {name}")
             if name != old_top_role:
                 logging.info(f"It's different, updating everything")
